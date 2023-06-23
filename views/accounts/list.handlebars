@@ -1,0 +1,32 @@
+<div class="input-field col s12 right-align">
+    <a href="/account/register" class="waves-effect waves-light col s12">
+        <i class="material-icons">add</i>
+    </a>
+    <a href="/" class="waves-effect waves-light col s12">
+        <i class="small material-icons">home</i>
+    </a>
+</div>
+
+<ul class="collection with-header">
+    <li class="collection-header">
+        <h4>Contas</h4>
+    </li>
+    <li class="collection-item">
+        <input type="text" id="IdPesqAccount" placeholder="Pesquisa aqui...">
+    </li>
+    {{#each data}}
+    <li class="collection-item">
+        <div>
+            {{name}}
+            <a href="/account/delete/{{id}}" class="secondary-content">
+                <i class="material-icons">delete</i>
+            </a>
+            <a href="/account/edit/{{id}}" class="secondary-content">
+                <i class="material-icons">edit</i>
+            </a>
+        </div>
+    </li>
+    {{/each}}
+</ul>
+
+<script src="/static/js/accounts.js"></script>

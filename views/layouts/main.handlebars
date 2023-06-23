@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Sistema</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+
+</head>
+
+<body>
+    <nav>
+        <div class="nav-wrapper lateral">
+            <a href="#" class="brand-logo">Logo</a>
+
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="/">Sair</a></li>
+            </ul>
+        </div>
+    </nav>
+    {{!-- Barra de alerta  --}}
+    <div class="central">
+
+        {{#if message}}
+            <div class="row">
+                <div class="col s12" id="idAlertMsg">
+                    <div class="alert card {{colorMsg}} text-darken-4">
+                        <div class="card-content">
+                            <p>
+                                <i class="material-icons">
+                                    {{#if iconMsg}}
+                                        check_circle
+                                    {{else}}
+                                        report
+                                    {{/if}}
+                                </i>
+
+                                <span>
+                                    {{message}}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+
+            {{!-- Área geral de dados do sistema --}}
+            {{{body}}}
+
+    </div>
+
+</body>
+
+</html>

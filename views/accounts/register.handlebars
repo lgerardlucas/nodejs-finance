@@ -1,0 +1,43 @@
+<div class="row">
+    <form class="superior" id="form" class="col s12" action={{#if edit}}"/account/edit/{{data.id}}"{{else}}"/account/register"{{/if}} method="POST">
+        <div class="row">
+            <div class="input-field col s12 right-align">
+                <a href="/account/list" class="tooltipped waves-effect waves-light row s12" data-position="bottom" data-tooltip="Listar contas...">
+                    <i class="small material-icons">list</i>
+                </a>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/" class="tooltipped waves-effect waves-light row s12" data-position="bottom" data-tooltip="Home do sistema">
+                    <i class="small material-icons">home</i>
+                </a>
+            </div>
+            <div class="input-field col s12">
+                <input placeholder="Nome da conta" id="name" name="name" type="text" 
+                        class="validate" value="{{data.name}}"
+                        pattern="[A-Za-zÀ-ú\s]+$" 
+                        autocomplete="off" autofocus
+                        onkeydown="return event.key !== 'Enter';">
+                {{!-- <span class="msgerror">{{message}}</span> --}}
+                <label for="name">Nome da conta</label>
+            </div>
+
+            <div class="input-field col s12">
+                <label>
+                    <input type="checkbox" name="active" checked=""/>
+                    <span>Ativo(S/N)</span>
+                </label>
+                </p>
+            </div>
+        </div>
+        <input type="hidden" id="IdEditContinue" name="editContinue">
+        <div class="input-field col s12">
+            <button class="btn waves-effect waves-light col s6" type="button" name="btnCont" id="IdbtnGravarContinuar">
+                Gravar e Continuar
+            </button>
+            <button class="btn waves-effect waves-light col s6" type="button" name="btnList" id="IdbtnGravarListar">
+                Gravar e Listar
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="/static/js/accounts.js"></script>
