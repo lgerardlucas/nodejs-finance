@@ -7,30 +7,28 @@ function extractErrorMsg(msg) {
             const erroMsg = msg.replace('Validation', '').replace('error', '').replace(':', '').trim();
             const titleMsg = (msg.includes('Validation')) && !erroMsg? 'Erro na validação dos dados!' : '';
             const result = `${titleMsg} ${erroMsg}`
-            resolve(result)
+            resolve(result.trim())
         } catch (err) {
             reject('Erro de extração de texto: ' + $(err))
         }
     });
 }
 
-async function render_template(res, msgAlert, form, action, id, insert=false) {
-    let accounts = null;
-    if (id !== 0) {
-        accounts = JSON.parse(JSON.stringify(await accountService.getAccountById(id)));
-    } else if (insert) {
-        accounts = null
-    } else if (form !== 'register') {
+async function render_template(res, msg, form, edit, id, insert=false) {
+    let form_use = form;
+    let accounts = id !== 0 ? JSON.parse(JSON.stringify(await accountService.getAccountById(id))) : null
+    if (!insert) {
         accounts = await accountService.getAllAccounts('accounts', 'name');
+        form_use = Object.entries(accounts).length === 0 ? 'register' : form;
     }
 
     try {
-        await extractErrorMsg(msgAlert).then((message) => {
-            res.render('accounts/'+form, {
+        await extractErrorMsg(msg).then((message) => {
+            res.render('accounts/'+form_use, {
                 message: message,
-                colorMsg: msgAlert.includes('error') === true? 'red white-text' : 'green black-text lighten-4',
-                iconMsg: msgAlert.includes('error') === true? false : true,
-                edit: action,
+                colorMsg: msg.includes('error') === true ? 'red white-text' : 'green black-text lighten-4',
+                iconMsg: msg.includes('error') === true ? false : true,
+                edit: edit,
                 data: accounts
             });
         });
@@ -58,7 +56,6 @@ exports.deleteAccount = async (req, res) => {
 };
 
 exports.updateAccount = async (req, res) => {
-    console.log('aqui')
     try {
         data = {
             name: req.body.name,
