@@ -16,8 +16,8 @@ function extractErrorMsg(msg) {
 
 async function render_template(res, msg, form, edit, id, insert=false) {
     let form_use = form;
-    let accounts = id !== 0 ? JSON.parse(JSON.stringify(await accountService.getAccountById(id))) : null
-    if (!insert) {
+    let accounts = id !== 0 ? JSON.parse(JSON.stringify(await accountService.getAccountById(id))) : {}
+    if (!insert && id === 0) {
         accounts = await accountService.getAllAccounts('accounts', 'name');
         form_use = Object.entries(accounts).length === 0 ? 'register' : form;
     }
