@@ -14,22 +14,15 @@ function extractErrorMsg(msg) {
     });
 }
 
-async function render_template(res, msg, form, edit, id, insert=false) {
-    let form_use = form;
-    let accounts = id !== 0 ? JSON.parse(JSON.stringify(await accountService.getAccountById(id))) : {}
-    if (!insert && id === 0) {
-        accounts = await accountService.getAllAccounts('accounts', 'name');
-        form_use = Object.entries(accounts).length === 0 ? 'register' : form;
-    }
-
+async function render_template(res, msg, form, edit, id, data) {
     try {
         await extractErrorMsg(msg).then((message) => {
-            res.render('accounts/'+form_use, {
+            res.render('accounts/'+form, {
                 message: message,
                 colorMsg: msg.includes('error') === true ? 'red white-text' : 'green black-text lighten-4',
                 iconMsg: msg.includes('error') === true ? false : true,
                 edit: edit,
-                data: accounts
+                data: data
             });
         });
     } catch (err) {
@@ -37,39 +30,49 @@ async function render_template(res, msg, form, edit, id, insert=false) {
     }
 };
 
-exports.createAccount = async (req, res) => {
+async function manipulationData(res, req, action, data, msg, id=0) {
     try {
-        await accountService.createAccount(req.body);
-        render_template(res, 'Registro salvo com sucesso!', req.body.editContinue, false, 0);
-    } catch (err) {
-        render_template(res, err.message, 'register', false, 0);
-    }
-};
+        if (action === 'list') {
+            await accountService.getAllAccounts('accounts', 'name').then((accounts) => {
+                form = req.body.editContinue !== undefined ? req.body.editContinue : 'list'
+                render_template(res, msg, form, false, 0, accounts);
+            })
+        } else if (action === 'add') {
+            await accountService.createAccount(data).then(() => {
+                manipulationData(res, req, 'list', {}, msg, 0)
+            })
 
-exports.deleteAccount = async (req, res) => {
-    try {
-        await accountService.deleteAccount(req.params.id)
-        render_template(res, 'Registro excluído com sucesso!', 'list', false, 0);
-    } catch (err) {
-        render_template(res, err.message, 'list', false, 0);
-    }
-};
-
-exports.updateAccount = async (req, res) => {
-    try {
-        data = {
-            name: req.body.name,
-            active: req.body.active
+        } else if (action === 'del') {
+            await accountService.deleteAccount(req.params.id).then(() => {
+                manipulationData(res, req, 'list', {}, msg, 0)
+            })
+        } else if (action === 'update') {
+            if (id > 0) {
+                await accountService.getAccountById(id).then((accounts) => {
+                    render_template(res, '', 'register', true, 0, JSON.parse(JSON.stringify(accounts)))
+                })
+            } else {
+                await accountService.updateAccount(req.params.id, data).then(() => {
+                    manipulationData(res, req, 'list', {}, msg, 0)
+                })
+            }
+        } else if (action === 'insert') {
+            render_template(res, '', 'register', false, 0, true);
         }
-        await accountService.updateAccount(req.params.id, data);
-        render_template(res, 'Registro alterado com sucesso!', req.body.editContinue, false, 0);
     } catch (err) {
-        render_template(res, err.message, 'register', false, 0);
+        const form = action.includes('add') || action.includes('update') ? 'register' : 'list'
+        render_template(res, err.message, form, false, 0);
     }
-};
+}
 
-exports.insertAccount = async (req, res) => render_template(res, '', 'register', false, 0, true);
+exports.createAccount = async (req, res) => await manipulationData(res, req, 'add', req.body, 'Registro salvo com sucesso!');
 
-exports.getAllAccounts = async (req, res) => render_template(res, '', 'list', false, 0);
+exports.deleteAccount = async (req, res) => await manipulationData(res, req, 'del', {}, 'Registro excluído com sucesso!');
 
-exports.getAccountById = async (req, res) => render_template(res, '', 'register', true, req.params.id);
+exports.updateAccount = async (req, res) => await manipulationData(res, req, 'update', req.body, 'Registro alterado com sucesso!');
+
+exports.insertAccount = async (req, res) => await manipulationData(res, req, 'insert', {}, '')
+
+exports.getAllAccounts = async (req, res) => await manipulationData(res, req, 'list', {}, '')
+
+exports.getAccountById = async (req, res) => await manipulationData(res, req, 'update', {}, '', req.params.id);

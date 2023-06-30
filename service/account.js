@@ -30,14 +30,8 @@ exports.getAccountById = async (id) => {
 };
 
 exports.updateAccount = async (id, account) => {
-    const {name, active} = account;
     try {
-        await Account.update({
-            name: name,
-            active: active
-        } , {
-            where: {id: id}
-        });
+        await Account.update(account, {where: {id: id} });
     } catch (err) {
         throw Error(err.message)
     }
